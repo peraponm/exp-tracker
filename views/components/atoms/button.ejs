@@ -1,0 +1,7 @@
+<button class="a-button <%= typeof type !== 'undefined' ? 'a-button-' + type : 'a-button-primary' %> <%= typeof className !== 'undefined' ? className : '' %>" 
+        <% if(typeof onclick !== 'undefined') { %> onclick="<%= onclick %>" <% } %>>
+  <% if(typeof icon !== 'undefined') { %>
+    <span class="icon"><%- icon %></span>
+  <% } %>
+  <%= label %>
+</button>

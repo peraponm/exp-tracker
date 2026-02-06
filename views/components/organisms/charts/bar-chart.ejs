@@ -1,0 +1,44 @@
+<div class="a-card">
+  <h3 style="margin-top:0; margin-bottom:1rem"><%= title %></h3>
+  <canvas id="<%= id %>"></canvas>
+</div>
+
+<script>
+  (function() {
+    const ctx = document.getElementById('<%= id %>').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: <%- JSON.stringify(labels) %>,
+        datasets: [{
+          label: '<%= label %>',
+          data: <%- JSON.stringify(data) %>,
+          backgroundColor: '<%= color || "#4361ee" %>',
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              display: true,
+              color: '#f0f0f0'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+  })();
+</script>

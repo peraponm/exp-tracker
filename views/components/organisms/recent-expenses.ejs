@@ -1,0 +1,40 @@
+<div class="a-card">
+  <div class="flex-between mb-4">
+    <h3 style="margin:0">รายการล่าสุด</h3>
+    <a href="/" style="color:var(--primary); text-decoration:none; font-size:0.9rem">ดูทั้งหมด</a>
+  </div>
+  
+  <table class="o-expense-list" style="width:100%; border-collapse:collapse">
+    <thead>
+      <tr>
+        <th>รายการ</th>
+        <th>หมวดหมู่</th>
+        <th>วันที่</th>
+        <th style="text-align:right">จำนวนเงิน</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% expenses.slice(0, 5).forEach(expense => { %>
+        <tr>
+          <td>
+            <div style="font-weight:500"><%= expense.description || 'ไม่ระบุ' %></div>
+            <div style="font-size:0.8rem; color:var(--text-muted)"><%= expense.payment_method %></div>
+          </td>
+          <td>
+            <%- include('../atoms/badge', { 
+                 label: expense.category_name, 
+                 color: expense.color,
+                 icon: expense.icon 
+               }) %>
+          </td>
+          <td style="color:var(--text-muted); font-size:0.9rem">
+            <%= formatDate(expense.expense_date) %>
+          </td>
+          <td style="text-align:right; font-weight:600; color:var(--danger)">
+            -<%= formatCurrency(expense.amount) %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

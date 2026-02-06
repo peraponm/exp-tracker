@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - Atomic Design</title>
+  <link rel="stylesheet" href="/css/atomic.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('components/organisms/sidebar', { path: '/analytics' }) %>
+
+    <main class="main-content">
+      <header class="flex-between mb-4">
+        <div>
+          <h2 style="margin:0">การวิเคราะห์ข้อมูล 📈</h2>
+          <p style="color:var(--text-muted); margin-top:0.5rem">สถิติและกราฟแสดงการใช้จ่ายของคุณในเดือนนี้</p>
+        </div>
+        <div style="font-size:0.9rem; color:var(--text-muted); background:white; padding:0.5rem 1rem; border-radius:8px; border:1px solid var(--gray-300)">
+          📅 <%= new Date().toLocaleDateString('th-TH', { month: 'long', year: 'numeric' }) %>
+        </div>
+      </header>
+
+      <!-- Stats Row -->
+      <div class="o-stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+        <%- include('components/molecules/stat-card', {
+             title: 'ค่าใช้จ่ายเฉลี่ยต่อวัน',
+             value: formatCurrency(dailyAvg),
+             subtext: '🗓️ คำนวณจาก ' + daysCount + ' วัน',
+             color: '#4361ee'
+           }) %>
+        
+        <%- include('components/molecules/stat-card', {
+             title: 'วันที่ใช้จ่ายสูงสุด',
+             value: formatCurrency(maxExpenseDay.amount),
+             subtext: '📅 ' + formatDate(maxExpenseDay.date),
+             color: '#f72585'
+           }) %>
+
+        <%- include('components/molecules/stat-card', {
+             title: 'หมวดหมู่สูงสุด',
+             value: topCategory.name,
+             subtext: '💸 ' + formatCurrency(topCategory.amount),
+             color: '#f8961e'
+           }) %>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="o-content-grid">
+        <!-- Main Bar Chart -->
+        <div style="grid-column: span 2;">
+          <%- include('components/organisms/charts/bar-chart', {
+               id: 'dailyTrendChart',
+               title: 'แนวโน้มรายจ่ายรายวัน',
+               label: 'รายจ่าย (บาท)',
+               labels: dailyLabels,
+               data: dailyData,
+               color: '#4cc9f0'
+             }) %>
+        </div>
+
+        <!-- Secondary Charts Column -->
+        <div style="display:flex; flex-direction:column; gap:1.5rem">
+          <%- include('components/organisms/charts/doughnut-chart', {
+               id: 'categoryPieChart',
+               title: 'สัดส่วนตามหมวดหมู่',
+               labels: catLabels,
+               data: catData,
+               colors: catColors
+             }) %>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<div class="a-card m-stat-card">
+  <div class="m-stat-card__title"><%= title %></div>
+  <div class="m-stat-card__value" style="<%= typeof color !== 'undefined' ? 'color:'+color : '' %>">
+    <%= value %>
+  </div>
+  <% if (typeof subtext !== 'undefined') { %>
+    <div class="m-stat-card__trend">
+      <%= subtext %>
+    </div>
+  <% } %>
+</div>

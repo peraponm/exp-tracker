@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แก้ไขรายจ่าย - Expense Tracker</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <h1>💰 Expense Tracker</h1>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="/" class="nav-link">รายการรายจ่าย</a></li>
+        <li><a href="/dashboard" class="nav-link">ภาพรวม (ใหม่)</a></li>
+        <li><a href="/analytics" class="nav-link">กราฟ (ใหม่)</a></li>
+        <li><a href="/expenses/summary" class="nav-link">สรุปรายจ่าย</a></li>
+        <li><a href="/expenses/add" class="btn btn-primary">+ เพิ่มรายจ่าย</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-header">
+      <h2>✏️ แก้ไขรายจ่าย</h2>
+      <a href="/" class="btn btn-outline">← กลับ</a>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <form method="POST" action="/expenses/<%= expense.id %>?_method=PUT" class="expense-form">
+          <div class="form-group">
+            <label for="expense_date">📅 วันที่: <span class="required">*</span></label>
+            <input type="date" name="expense_date" id="expense_date" class="form-control" 
+                   value="<%= expense.expense_date %>" required>
+          </div>
+
+          <div class="form-group">
+            <label for="amount">💵 จำนวนเงิน (บาท): <span class="required">*</span></label>
+            <input type="number" name="amount" id="amount" class="form-control" 
+                   min="0.01" step="0.01" value="<%= expense.amount %>" required>
+          </div>
+
+          <div class="form-group">
+            <label for="category_id">📂 หมวดหมู่: <span class="required">*</span></label>
+            <select name="category_id" id="category_id" class="form-control" required>
+              <option value="">เลือกหมวดหมู่</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>" <%= cat.id === expense.category_id ? 'selected' : '' %>>
+                  <%= cat.icon %> <%= cat.name %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="payment_method">💳 วิธีชำระเงิน:</label>
+            <select name="payment_method" id="payment_method" class="form-control">
+              <option value="เงินสด" <%= expense.payment_method === 'เงินสด' ? 'selected' : '' %>>💵 เงินสด</option>
+              <option value="บัตรเครดิต" <%= expense.payment_method === 'บัตรเครดิต' ? 'selected' : '' %>>💳 บัตรเครดิต</option>
+              <option value="โอนเงิน" <%= expense.payment_method === 'โอนเงิน' ? 'selected' : '' %>>🏦 โอนเงิน</option>
+              <option value="QR Code" <%= expense.payment_method === 'QR Code' ? 'selected' : '' %>>📱 QR Code</option>
+              <option value="อื่นๆ" <%= expense.payment_method === 'อื่นๆ' ? 'selected' : '' %>>📌 อื่นๆ</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="description">📝 รายละเอียด:</label>
+            <textarea name="description" id="description" class="form-control" rows="3" 
+                      placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)"><%= expense.description || '' %></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">💾 บันทึกการแก้ไข</button>
+            <a href="/" class="btn btn-outline">ยกเลิก</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card card-warning">
+      <div class="card-header">
+        <h4>⚠️ ลบรายจ่ายนี้</h4>
+      </div>
+      <div class="card-body">
+        <p>หากต้องการลบรายจ่ายนี้ กดปุ่มด้านล่าง</p>
+        <form method="POST" action="/expenses/<%= expense.id %>?_method=DELETE" 
+              onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้? การกระทำนี้ไม่สามารถย้อนกลับได้');">
+          <button type="submit" class="btn btn-danger">🗑️ ลบรายจ่ายนี้</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Expense Tracker - บันทึกรายจ่ายประจำวัน</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

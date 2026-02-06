@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายการรายจ่าย - Expense Tracker</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <h1>💰 Expense Tracker</h1>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="/" class="nav-link">รายการรายจ่าย</a></li>
+        <li><a href="/dashboard" class="nav-link">ภาพรวม (ใหม่)</a></li>
+        <li><a href="/analytics" class="nav-link">กราฟ (ใหม่)</a></li>
+        <li><a href="/expenses/summary" class="nav-link">สรุปรายจ่าย</a></li>
+        <li><a href="/expenses/add" class="btn btn-primary">+ เพิ่มรายจ่าย</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-header">
+      <h2>รายการรายจ่ายทั้งหมด</h2>
+      <a href="/expenses/add" class="btn btn-primary">+ เพิ่มรายจ่าย</a>
+    </div>
+
+    <% if (typeof success !== 'undefined' && success === 'added') { %>
+      <div class="alert alert-success">✅ เพิ่มรายจ่ายสำเร็จ</div>
+    <% } %>
+    <% if (typeof success !== 'undefined' && success === 'updated') { %>
+      <div class="alert alert-success">✅ อัปเดตรายจ่ายสำเร็จ</div>
+    <% } %>
+    <% if (typeof success !== 'undefined' && success === 'deleted') { %>
+      <div class="alert alert-success">✅ ลบรายจ่ายสำเร็จ</div>
+    <% } %>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>🔍 ค้นหาและกรอง</h3>
+      </div>
+      <div class="card-body">
+        <form method="GET" action="/" class="filter-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="category">หมวดหมู่:</label>
+              <select name="category" id="category" class="form-control">
+                <option value="">ทั้งหมด</option>
+                <% categories.forEach(cat => { %>
+                  <option value="<%= cat.id %>" <%= filters.category == cat.id ? 'selected' : '' %>>
+                    <%= cat.icon %> <%= cat.name %>
+                  </option>
+                <% }); %>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="start_date">จากวันที่:</label>
+              <input type="date" name="start_date" id="start_date" class="form-control" 
+                     value="<%= filters.start_date || '' %>">
+            </div>
+            
+            <div class="form-group">
+              <label for="end_date">ถึงวันที่:</label>
+              <input type="date" name="end_date" id="end_date" class="form-control" 
+                     value="<%= filters.end_date || '' %>">
+            </div>
+            
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button type="submit" class="btn btn-secondary">ค้นหา</button>
+              <a href="/" class="btn btn-outline">ล้างค่า</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>📊 ยอดรวม: <span class="text-primary"><%= formatCurrency(total) %></span></h3>
+        <span class="badge"><%= expenses.length %> รายการ</span>
+      </div>
+      <div class="card-body">
+        <% if (expenses.length === 0) { %>
+          <div class="empty-state">
+            <p>😊 ไม่มีรายการรายจ่าย</p>
+            <a href="/expenses/add" class="btn btn-primary">เพิ่มรายจ่ายแรก</a>
+          </div>
+        <% } else { %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>วันที่</th>
+                  <th>หมวดหมู่</th>
+                  <th>รายละเอียด</th>
+                  <th>วิธีชำระ</th>
+                  <th class="text-right">จำนวนเงิน</th>
+                  <th class="text-center">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% expenses.forEach(expense => { %>
+                  <tr>
+                    <td><%= formatDate(expense.expense_date) %></td>
+                    <td>
+                      <span class="category-badge" style="background-color: <%= expense.color %>20; color: <%= expense.color %>;">
+                        <%= expense.icon %> <%= expense.category_name %>
+                      </span>
+                    </td>
+                    <td><%= expense.description || '-' %></td>
+                    <td><%= expense.payment_method %></td>
+                    <td class="text-right"><strong><%= formatCurrency(expense.amount) %></strong></td>
+                    <td class="text-center">
+                      <div class="btn-group">
+                        <a href="/expenses/<%= expense.id %>/edit" class="btn btn-sm btn-secondary">✏️ แก้ไข</a>
+                        <form method="POST" action="/expenses/<%= expense.id %>?_method=DELETE" style="display: inline;" 
+                              onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?');">
+                          <button type="submit" class="btn btn-sm btn-danger">🗑️ ลบ</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Expense Tracker - บันทึกรายจ่ายประจำวัน</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<nav class="o-sidebar">
+  <div class="o-sidebar__brand">
+    <span>💰</span> ExpTracker
+  </div>
+  <div class="o-sidebar__menu">
+    <%- include('../molecules/nav-item', { 
+         href: '/dashboard', 
+         icon: '📊', 
+         label: 'ภาพรวม (Dashboard)', 
+         active: path === '/dashboard' 
+       }) %>
+    <%- include('../molecules/nav-item', { 
+         href: '/analytics', 
+         icon: '📈', 
+         label: 'การวิเคราะห์ (Analytics)', 
+         active: path === '/analytics' 
+       }) %>
+    <%- include('../molecules/nav-item', {  
+         href: '/', 
+         icon: '📝', 
+         label: 'รายการรายจ่าย', 
+         active: path === '/' 
+       }) %>
+    <%- include('../molecules/nav-item', { 
+         href: '/expenses/add', 
+         icon: '➕', 
+         label: 'เพิ่มรายจ่าย', 
+         active: path === '/expenses/add' 
+       }) %>
+    <%- include('../molecules/nav-item', { 
+         href: '#', 
+         icon: '⚙️', 
+         label: 'ตั้งค่า', 
+         active: false 
+       }) %>
+  </div>
+</nav>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สรุปรายจ่าย - Expense Tracker</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <h1>💰 Expense Tracker</h1>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="/" class="nav-link">รายการรายจ่าย</a></li>
+        <li><a href="/dashboard" class="nav-link">ภาพรวม (ใหม่)</a></li>
+        <li><a href="/analytics" class="nav-link">กราฟ (ใหม่)</a></li>
+        <li><a href="/expenses/summary" class="nav-link">สรุปรายจ่าย</a></li>
+        <li><a href="/expenses/add" class="btn btn-primary">+ เพิ่มรายจ่าย</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-header">
+      <h2>📊 สรุปรายจ่าย</h2>
+      <a href="/" class="btn btn-outline">← กลับ</a>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>🔍 เลือกช่วงเวลา</h3>
+      </div>
+      <div class="card-body">
+        <form method="GET" action="/expenses/summary" class="filter-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="start_date">จากวันที่:</label>
+              <input type="date" name="start_date" id="start_date" class="form-control" 
+                     value="<%= filters.start_date %>" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="end_date">ถึงวันที่:</label>
+              <input type="date" name="end_date" id="end_date" class="form-control" 
+                     value="<%= filters.end_date %>" required>
+            </div>
+            
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button type="submit" class="btn btn-primary">ดูสรุป</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-icon">💰</div>
+        <div class="summary-content">
+          <div class="summary-label">ยอดรวมทั้งหมด</div>
+          <div class="summary-value"><%= formatCurrency(total) %></div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon">📝</div>
+        <div class="summary-content">
+          <div class="summary-label">จำนวนรายการ</div>
+          <div class="summary-value"><%= expenses.length %> รายการ</div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon">📊</div>
+        <div class="summary-content">
+          <div class="summary-label">ค่าเฉลี่ยต่อวัน</div>
+          <div class="summary-value">
+            <% 
+              const startDate = new Date(filters.start_date);
+              const endDate = new Date(filters.end_date);
+              const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+              const avgPerDay = daysDiff > 0 ? (total / daysDiff) : 0;
+            %>
+            <%= formatCurrency(avgPerDay) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-icon">📂</div>
+        <div class="summary-content">
+          <div class="summary-label">หมวดหมู่</div>
+          <div class="summary-value"><%= Object.keys(breakdown).length %> หมวดหมู่</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>📂 สรุปตามหมวดหมู่</h3>
+      </div>
+      <div class="card-body">
+        <% if (Object.keys(breakdown).length === 0) { %>
+          <div class="empty-state">
+            <p>😊 ไม่มีรายการรายจ่ายในช่วงเวลานี้</p>
+          </div>
+        <% } else { %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>หมวดหมู่</th>
+                  <th class="text-center">จำนวนรายการ</th>
+                  <th class="text-right">ยอดรวม</th>
+                  <th class="text-right">เปอร์เซ็นต์</th>
+                  <th>สัดส่วน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% Object.entries(breakdown).forEach(([categoryName, data]) => { %>
+                  <tr>
+                    <td>
+                      <span class="category-badge" style="background-color: <%= data.color %>20; color: <%= data.color %>;">
+                        <%= data.icon %> <%= categoryName %>
+                      </span>
+                    </td>
+                    <td class="text-center"><%= data.count %></td>
+                    <td class="text-right"><strong><%= formatCurrency(data.amount) %></strong></td>
+                    <td class="text-right"><%= data.percentage %>%</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div class="progress-fill" style="width: <%= data.percentage %>%; background-color: <%= data.color %>;"></div>
+                      </div>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+              <tfoot>
+                <tr class="total-row">
+                  <td><strong>รวม</strong></td>
+                  <td class="text-center"><strong><%= expenses.length %></strong></td>
+                  <td class="text-right"><strong><%= formatCurrency(total) %></strong></td>
+                  <td class="text-right"><strong>100%</strong></td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (expenses.length > 0) { %>
+      <div class="card">
+        <div class="card-header">
+          <h3>📋 รายการทั้งหมดในช่วงเวลานี้</h3>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>วันที่</th>
+                  <th>หมวดหมู่</th>
+                  <th>รายละเอียด</th>
+                  <th class="text-right">จำนวนเงิน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% expenses.forEach(expense => { %>
+                  <tr>
+                    <td><%= formatDate(expense.expense_date) %></td>
+                    <td>
+                      <span class="category-badge" style="background-color: <%= expense.color %>20; color: <%= expense.color %>;">
+                        <%= expense.icon %> <%= expense.category_name %>
+                      </span>
+                    </td>
+                    <td><%= expense.description || '-' %></td>
+                    <td class="text-right"><%= formatCurrency(expense.amount) %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Expense Tracker - บันทึกรายจ่ายประจำวัน</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

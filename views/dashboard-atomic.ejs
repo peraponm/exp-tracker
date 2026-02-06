@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Atomic Design</title>
+  <link rel="stylesheet" href="/css/atomic.css">
+  <!-- Chart.js for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Organism: Sidebar -->
+    <%- include('components/organisms/sidebar', { path: '/dashboard' }) %>
+
+    <main class="main-content">
+      <header class="flex-between mb-4">
+        <div>
+          <h2 style="margin:0">ยินดีต้อนรับกลับ, ผู้ใช้! 👋</h2>
+          <p style="color:var(--text-muted); margin-top:0.5rem">นี่คือภาพรวมการเงินของคุณในเดือนนี้</p>
+        </div>
+        <%- include('components/atoms/button', {
+             label: 'เพิ่มรายจ่าย',
+             type: 'primary',
+             icon: '➕',
+             onclick: "window.location.href='/expenses/add'"
+           }) %>
+      </header>
+
+      <!-- Organism: Stats Grid -->
+      <div class="o-stats-grid">
+        <%- include('components/molecules/stat-card', {
+             title: 'ยอดคงเหลือ',
+             value: '฿' + (25000 - total).toLocaleString(),
+             subtext: '💰 รายรับ 25,000 บาท',
+             color: '#4361ee'
+           }) %>
+        
+        <%- include('components/molecules/stat-card', {
+             title: 'รายจ่ายทั้งหมด',
+             value: formatCurrency(total),
+             subtext: '💸 เดือนนี้',
+             color: '#f72585'
+           }) %>
+
+        <%- include('components/molecules/stat-card', {
+             title: 'เป้าหมายการออม',
+             value: '80%',
+             subtext: '📈 ใกล้ถึงเป้าหมายแล้ว',
+             color: '#4cc9f0'
+           }) %>
+           
+        <%- include('components/molecules/stat-card', {
+             title: 'รายการล่าสุด',
+             value: expenses.length + ' รายการ',
+             subtext: '📝 บันทึกแล้ว',
+             color: '#f8961e'
+           }) %>
+      </div>
+
+      <div class="o-content-grid">
+        <!-- Organism: Recent Expenses -->
+        <%- include('components/organisms/recent-expenses', { expenses: expenses }) %>
+
+        <!-- Molecule/Organism: Chart Card -->
+        <div class="a-card">
+          <h3 style="margin-top:0; margin-bottom:1rem">สัดส่วนค่าใช้จ่าย</h3>
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Prepare data for chart
+    const categories = <%- JSON.stringify(breakdown.map(b => b.name)) %>;
+    const amounts = <%- JSON.stringify(breakdown.map(b => b.total)) %>;
+    const colors = <%- JSON.stringify(breakdown.map(b => b.color)) %>;
+
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: categories,
+        datasets: [{
+          data: amounts,
+          backgroundColor: colors,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 8
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

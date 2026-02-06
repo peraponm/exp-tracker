@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เพิ่มรายจ่าย - Expense Tracker</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <h1>💰 Expense Tracker</h1>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="/" class="nav-link">รายการรายจ่าย</a></li>
+        <li><a href="/dashboard" class="nav-link">ภาพรวม (ใหม่)</a></li>
+        <li><a href="/analytics" class="nav-link">กราฟ (ใหม่)</a></li>
+        <li><a href="/expenses/summary" class="nav-link">สรุปรายจ่าย</a></li>
+        <li><a href="/expenses/add" class="btn btn-primary">+ เพิ่มรายจ่าย</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-header">
+      <h2>➕ เพิ่มรายจ่ายใหม่</h2>
+      <a href="/" class="btn btn-outline">← กลับ</a>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <form method="POST" action="/expenses" class="expense-form">
+          <div class="form-group">
+            <label for="expense_date">📅 วันที่: <span class="required">*</span></label>
+            <input type="date" name="expense_date" id="expense_date" class="form-control" 
+                   value="<%= getCurrentDate() %>" required>
+          </div>
+
+          <div class="form-group">
+            <label for="amount">💵 จำนวนเงิน (บาท): <span class="required">*</span></label>
+            <input type="number" name="amount" id="amount" class="form-control" 
+                   min="0.01" step="0.01" placeholder="0.00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="category_id">📂 หมวดหมู่: <span class="required">*</span></label>
+            <select name="category_id" id="category_id" class="form-control" required>
+              <option value="">เลือกหมวดหมู่</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>"><%= cat.icon %> <%= cat.name %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="payment_method">💳 วิธีชำระเงิน:</label>
+            <select name="payment_method" id="payment_method" class="form-control">
+              <option value="เงินสด">💵 เงินสด</option>
+              <option value="บัตรเครดิต">💳 บัตรเครดิต</option>
+              <option value="โอนเงิน">🏦 โอนเงิน</option>
+              <option value="QR Code">📱 QR Code</option>
+              <option value="อื่นๆ">📌 อื่นๆ</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="description">📝 รายละเอียด:</label>
+            <textarea name="description" id="description" class="form-control" rows="3" 
+                      placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">💾 บันทึก</button>
+            <a href="/" class="btn btn-outline">ยกเลิก</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card card-info">
+      <div class="card-header">
+        <h4>💡 เคล็ดลับ</h4>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>บันทึกรายจ่ายทันทีที่ใช้เงิน จะช่วยให้ไม่ลืม</li>
+          <li>ระบุรายละเอียดให้ชัดเจน จะเช็คย้อนหลังได้สะดวก</li>
+          <li>เลือกหมวดหมู่ให้ถูกต้อง เพื่อการวิเคราะห์ที่แม่นยำ</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Expense Tracker - บันทึกรายจ่ายประจำวัน</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
